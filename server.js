@@ -6,11 +6,15 @@ const bodyparser = require("body-parser");
 const mongoose = require('mongoose');
 const app = express()
 app.set('view engine', 'ejs');
-app.use(express.static('./public'));
+// app.use(express.static('./public'));
+const path = require('path');
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyparser.urlencoded({
   extended: true
 }));
+app.use(bodyparser.json());
 const cors = require('cors');
+const { findSourceMap } = require('module');
 app.use(cors());
 //***********************************************************************************************************************/
 
@@ -31,9 +35,102 @@ const pokSchema = new mongoose.Schema({
   "type": Array
 });
 
+const UserSchema = new mongoose.Schema({
+  "username": String,
+  "firstname": String,
+  "lastname": String,
+  "password": String,
+  "shoppingcard": Array
+});
+
 const poklogsModel = mongoose.model("poklogs", logSchema);
 const poksModel = mongoose.model("poks", pokSchema);
+const userModel = mongoose.model("user", UserSchema);
 //************************************************************************************************************* */
+
+
+function addUserDB(user){
+  userModel.count({ "username": user.username }, function (err, count) {
+    if (err) {
+      console.log("Error " + err);
+    } else if (count == 0) {
+      userModel.create({
+        "username": user.username,
+        "firstname": user.firstname,
+        "lastname": user.lastname,
+        "password": user.password,
+        "shoppingcard": []
+      });
+    }
+    else{
+        throw "user already exists";
+    }
+  });}
+
+
+  function findUserDB(credentials, next){
+   userModel.find({"username": credentials.username, "password": credentials.password}, function(err, data){
+     //res.send(JSON.stringify(data))
+     next(JSON.stringify(data));
+   });
+  }
+
+
+//helper
+function addPokemonDB(pokemon){
+  poksModel.count({ "id": pokemon.id }, function (err, count) {
+    if (err) {
+      console.log("Error " + err);
+    } else if (count == 0) {
+      poksModel.create({
+        "id": pokemon.id,
+        "name": pokemon.name,
+        "weight": pokemon.weight,
+        "height": pokemon.height,
+        "species": pokemon.species,
+        "type": pokemon.type
+      });
+    }});
+}
+
+//helper
+function addPokemonLogDB(pokemon){
+  poklogsModel.count({ "id": pokemon.id}, function (err, count) {
+    if (err) {
+      console.log("Error " + err);
+    } else if (count == 0) {
+      poklogsModel.create({
+        "id": pokemon.id,
+        likes: 0,
+        dislikes: 0
+      });
+    }});
+}
+
+
+
+/*********************************************************************************************************** */
+
+// app.get('/signuppage', function(req, res){
+//   //res.sendFile('signup-page.html',{ root: __dirname });
+//   res.sendFile('./signuppage.html');
+// });
+
+// app.get('/loginpage', function(req, res){
+//   //res.sendFile('login-page.html',{ root: __dirname });
+//   res.sendFile('./loginpage.html');
+// });
+
+app.post('/signup', function(req, res){
+  const user = {"username": req.body.username, "firstname": req.body.username, "lastname": req.body.username,"password": req.body.username};
+  addUserDB(user);
+
+  res.redirect('./loginpage.html');
+});
+
+app.post('/login', function(req, res){
+  findUserDB({"username": req.body.username, "password": req.body.password}, (data)=>res.send(data));
+});
 
 
 
@@ -179,38 +276,6 @@ app.get('/profile/:id', function (req, res) {
 
 
 
-
-
-//helper
-function addPokemonDB(pokemon){
-  poksModel.count({ "id": pokemon.id }, function (err, count) {
-    if (err) {
-      console.log("Error " + err);
-    } else if (count == 0) {
-      poksModel.create({
-        "id": pokemon.id,
-        "name": pokemon.name,
-        "weight": pokemon.weight,
-        "height": pokemon.height,
-        "species": pokemon.species,
-        "type": pokemon.type
-      });
-    }});
-}
-
-//helper
-function addPokemonLogDB(pokemon){
-  poklogsModel.count({ "id": pokemon.id}, function (err, count) {
-    if (err) {
-      console.log("Error " + err);
-    } else if (count == 0) {
-      poklogsModel.create({
-        "id": pokemon.id,
-        likes: 0,
-        dislikes: 0
-      });
-    }});
-}
 
 
 function populateDB(){
