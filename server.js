@@ -12,7 +12,7 @@ app.use(bodyparser.urlencoded({
 }));
 const cors = require('cors');
 app.use(cors());
-
+//***********************************************************************************************************************/
 
 mongoose.connect("mongodb://localhost:27017/log",
   { useNewUrlParser: true, useUnifiedTopology: true });
@@ -21,7 +21,30 @@ const logSchema = new mongoose.Schema({
   likes: Number,
   dislikes: Number
 });
+
+const pokSchema = new mongoose.Schema({
+  "id": Number,
+  "name": String,
+  "weight": Number,
+  "height": Number,
+  "species": String,
+  "type": Array
+});
+
 const poklogsModel = mongoose.model("poklogs", logSchema);
+const poksModel = mongoose.model("poks", pokSchema);
+//************************************************************************************************************* */
+
+
+
+
+
+
+
+
+
+
+
 
 app.get('/log/poklogs', function (req, res) {
   poklogsModel.find({}, { _id: 0, id: 1, likes: 1, dislikes: 1 }, function (err, logs) {
@@ -123,15 +146,7 @@ app.get('/log/remove/:id', function (req, res) {
 
 
 
-const pokSchema = new mongoose.Schema({
-  "id": Number,
-  "name": String,
-  "weight": Number,
-  "height": Number,
-  "species": String,
-  "type": Array
-});
-const poksModel = mongoose.model("poks", pokSchema);
+
 
 app.get('/pok/:id', function (req, res) {
   poksModel.find({ id: req.params.id }, { _id: 0, id: 1, name: 1, weight: 1, height: 1, species: 1, type: 1 }, function (err, poks) {
@@ -164,107 +179,48 @@ app.get('/profile/:id', function (req, res) {
 
 
 
-function removePokLogs() {
-  poklogsModel.remove({}, function (err, data) {
+
+
+//helper
+function addPokemonDB(pokemon){
+  poksModel.count({ "id": pokemon.id }, function (err, count) {
     if (err) {
       console.log("Error " + err);
-    } else {
-      console.log('Removed all pok logs from db');
-    }
-  });
-
-}
-
-function removePoks() {
-  poksModel.remove({}, function (err, data) {
-    if (err) {
-      console.log("Error " + err);
-    } else {
-      console.log('Removed all poks from db');
-    }
-  });
-}
-
-
-function remove() {
-  poklogsModel.count({}, function (err, count) {
-    if (err) {
-      console.log("Error " + err);
-    } else if (count != 0) {
-      removePokLogs();
-    }
-
-  });
-
-
-  poksModel.count({}, function (err, count) {
-    if (err) {
-      console.log("Error " + err);
-    } else if (count != 0) {
-      removePoks();
-    }
-
-  });
-
-}
-
-function populateDB() {
-  remove();
-  for (let i = 1; i <= 40; ++i) {
-    https.get(`https://pokeapi.co/api/v2/pokemon/${i}`, (resp) => {
-      let data = '';
-
-      
-      resp.on('data', (chunk) => {
-        data += chunk;
+    } else if (count == 0) {
+      poksModel.create({
+        "id": pokemon.id,
+        "name": pokemon.name,
+        "weight": pokemon.weight,
+        "height": pokemon.height,
+        "species": pokemon.species,
+        "type": pokemon.type
       });
+    }});
+}
 
-     
-      resp.on('end', () => {
-        let properties = JSON.parse(data);
-        let poktypes = [];
-
-        for (let i = 0; i < properties.types.length; ++i) {
-          poktypes.push(properties.types[i].type.name);
-        }
-       
-
-        poksModel.count({ "id": parseInt(properties.id) }, function (err, count) {
-          if (err) {
-            console.log("Error " + err);
-          } else if (count == 0) {
-            poksModel.create({
-              "id": parseInt(properties.id),
-              "name": properties.name,
-              "weight": parseInt(properties.weight),
-              "height": parseInt(properties.height),
-              "species": properties.species.name,
-              "type": poktypes
-            });
-          }
-
-        });
-        poksModel.count({ "id": parseInt(properties.id) }, function (err, count) {
-          if (err) {
-            console.log("Error " + err);
-          } else if (count == 0) {
-            poklogsModel.create({
-              "id": parseInt(properties.id),
-              likes: 0,
-              dislikes: 0
-            });
-          }
-
-        });
+//helper
+function addPokemonLogDB(pokemon){
+  poklogsModel.count({ "id": pokemon.id}, function (err, count) {
+    if (err) {
+      console.log("Error " + err);
+    } else if (count == 0) {
+      poklogsModel.create({
+        "id": pokemon.id,
+        likes: 0,
+        dislikes: 0
       });
+    }});
+}
 
-    }).on("error", (err) => {
-      console.log("Error: " + err.message);
-    })
+
+function populateDB(){
+  const pokemonText = fs.readFileSync('./pokemon-details.json', 'utf8');
+  pokemonObjs = JSON.parse(pokemonText).pokes;
+  for(let i = 1; i <= 800; ++i){
+    addPokemonDB(pokemonObjs.filter(pok => pok.id == i));
+    addPokemonLogDB(pokemonObjs.filter(pok => pok.id == i));
   }
-
 }
-
 
 
 app.listen(5000, function (err) {

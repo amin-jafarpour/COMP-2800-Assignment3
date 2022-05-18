@@ -11,7 +11,7 @@ let pokemons;
 try {
     const data = fs.readFileSync('./pokemon-details.json', 'utf8');
     pokemons = JSON.parse(data).pokes;
-    console.log(pokemons.filter(pok => pok.id == 2));
+    console.log(pokemons.filter(pok => pok.id == 800));
   } catch (err) {
     console.error(err);
   }
