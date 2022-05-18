@@ -1,5 +1,6 @@
 const express = require('express');
 const { read } = require('fs');
+const fs = require('fs');
 const https = require('https');
 const bodyparser = require("body-parser");
 const mongoose = require('mongoose');
@@ -264,150 +265,12 @@ function populateDB() {
 
 }
 
-populateDB();
-
-// app.get('/reload', function (req, res) {
-
-
-
-//   remove();
-//   for (let i = 1; i <= 30; ++i) {
-//     https.get(`https://pokeapi.co/api/v2/pokemon/${i}`, (resp) => {
-//       let data = '';
-
-//       // A chunk of data has been received.
-//       resp.on('data', (chunk) => {
-//         data += chunk;
-//       });
-
-//       // The whole response has been received. Print out the result.
-//       resp.on('end', () => {
-//         let properties = JSON.parse(data);
-//         let poktypes = [];
-
-//         for (let i = 0; i < properties.types.length; ++i) {
-//           poktypes.push(properties.types[i].type.name);
-//         }
-//         // poksModel.create({
-//         //   "id": parseInt(properties.id),
-//         //   "name": properties.name,
-//         //   "weight": parseInt(properties.weight),
-//         //   "height": parseInt(properties.height),
-//         //   "species": properties.species.name,
-//         //   "type": poktypes
-//         // });
-
-
-//         poksModel.count({ "id": parseInt(properties.id) }, function (err, count) {
-//           if (err) {
-//             console.log("Error " + err);
-//           } else if (count == 0) {
-//             poksModel.create({
-//               "id": parseInt(properties.id),
-//               "name": properties.name,
-//               "weight": parseInt(properties.weight),
-//               "height": parseInt(properties.height),
-//               "species": properties.species.name,
-//               "type": poktypes
-//             });
-//           }
-
-//         });
-
-
-
-
-//         // poklogsModel.create({
-//         //   "id": parseInt(properties.id),
-//         //   likes: 0,
-//         //   dislikes: 0
-//         // });
-
-
-//         poksModel.count({ "id": parseInt(properties.id) }, function (err, count) {
-//           if (err) {
-//             console.log("Error " + err);
-//           } else if (count == 0) {
-//             console.log('count: ', count);
-//             poklogsModel.create({
-//               "id": parseInt(properties.id),
-//               likes: 0,
-//               dislikes: 0
-//             });
-//           }
-
-//         });
-//       });
-
-//     }).on("error", (err) => {
-//       console.log("Error: " + err.message);
-//     })
-//   }
-
-
-
-
-
-
-
-//   res.json({ "bad": "good" });
-// });
-
-
-
-
-
-
-
-
-
-
-// app.get('/profile/:id', function (req, res) {
-
-
-//   https.get(`https://pokeapi.co/api/v2/pokemon/${req.params.id}`, (resp) => {
-//     let data = '';
-
-//     // A chunk of data has been received.
-//     resp.on('data', (chunk) => {
-//       data += chunk;
-//     });
-
-//     // The whole response has been received. Print out the result.
-//     resp.on('end', () => {
-//       // console.log(JSON.parse(data).explanation);
-//       let properties = JSON.parse(data);
-
-//       res.render("profile.ejs", {
-//         "id": properties.id,
-//         "name": properties.name,
-//         "weight": properties.weight,
-//         "height": properties.height,
-//         "species": properties.species.name
-//       });
-
-//     });
-
-//   }).on("error", (err) => {
-//     console.log("Error: " + err.message);
-//   })
-
-// });
-
-
-
-
-
-
-
-
-
-
 
 
 app.listen(5000, function (err) {
   if (err)
     console.log(err);
+    populateDB();
 });
 
 
