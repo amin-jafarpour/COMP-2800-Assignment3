@@ -253,11 +253,20 @@ function addUserCardDB(username, id, next) {
           }
       }
       cards = cards.filter((item)=>item.qty>0);
-      // if(cards[i].qty == 0){
-      //   cards = cards.splice(i, 1);
-      //   console.log(cards, i);
-      // }
       userModel.updateOne({"username": username}, {$set: {"shoppingcard":cards}}, ()=>next({"id": id, "qty":newQty}));})
+    }
+
+    function getUserPurchaseDB(username, next){
+      userModel.find({"username": username}, function(err, data){
+        let cards = data[0].shoppingcard;
+        let purchaseSummary = 'Details:\n';
+        let cost = 0.0;
+        for(let i = 0; i < cards.length; ++i){
+          purchaseSummary += `Pokemon ID: ${cards[i].id} - QTY: ${cards[i].qty}\n`;
+          cost += 30 * cards[i].qty;
+        } 
+        next({"summary": purchaseSummary, "cost": cost});
+      })
     }
 
 
@@ -282,6 +291,11 @@ app.get('/pokemonpurchase/:id', authenticateUser, function (req, res) {
       });
     }
   });
+});
+
+
+app.get('/summarypurchase', authenticateUser, function (req, res) {
+  getUserPurchaseDB(req.session.username, (data)=>res.json(data));
 });
 
 
