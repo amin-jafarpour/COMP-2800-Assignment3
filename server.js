@@ -187,12 +187,14 @@ app.get('/purchase/:id', authenticateUser, function (req, res) {
     if (err) {
       console.log("Error " + err);
     } else {
+      const css = fs.readFileSync("./views/purchase.css",'utf8');
       res.render("purchasepage.ejs", {
         "id": properties[0].id,
         "name": properties[0].name,
         "weight": properties[0].weight,
         "height": properties[0].height,
-        "species": properties[0].species
+        "species": properties[0].species,
+        "css": css
       });
     }
   });
@@ -281,14 +283,6 @@ function addUserCardDB(username, id, next) {
         userModel.updateOne({"username": username}, {$set: {"shoppingcard":[]}, $push: {"timeline": {"details": purchaseDetails, time: new Date()}}}, ()=>next("purchase procssed"))
       });
     }
-
-
-
-//{ $push: { <field1>: <value1>, ... } }
-//  { $push: { scores: 89 } }
-//$pull: { 'software.services': "yahoo" }}
-//  { $pullAll: { bar: [ 8 ] } } 
-//db.students.insertOne( { _id: 1, scores: [ 44, 78, 38, 80 ] } )
 
 app.get('/pokemonpurchase/:id', authenticateUser, function (req, res) {
   poksModel.find({ "id": req.params.id }, { _id: 0, id: 1, name: 1, weight: 1, height: 1, species: 1 }, function (err, properties) {
