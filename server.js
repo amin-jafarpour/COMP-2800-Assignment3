@@ -309,6 +309,11 @@ app.get('/processpurchase', authenticateUser, function (req, res) {
   processUserPurchaseDB(req.session.username, (data)=>res.json(data));
 });
 
+app.get('/logout', authenticateUser, (req, res) => {
+  req.session.destroy();
+  res.redirect('/');
+});
+
 
 
 
