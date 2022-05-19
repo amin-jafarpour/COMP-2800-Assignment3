@@ -14,14 +14,13 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
     <script>
-        async function likes() {
+        async function addcard(increment) {
             try {
                 await $.ajax({
                     type: "GET",
-                    url: `http://localhost:5000/log/like/${$('#pokid').text()}`,
+                    url: `/addcard/${$('#pokid').text()}/${increment}`,
                     success: function (data) {
-                        $('#numLikes').text(data[0].likes);
-
+                        $('#qty').text(JSON.parse(data));
                     }
                 })
             } catch (error) {
@@ -29,20 +28,7 @@
             }
         }
 
-
-        async function dislikes() {
-            try {
-                await $.ajax({
-                    type: "GET",
-                    url: `http://localhost:5000/log/dislike/${$('#pokid').text()}`,
-                    success: function (data) {
-                        $('#numDislikes').text(data[0].dislikes);
-                    }
-                })
-            } catch (error) {
-                console.log(error);
-            }
-        }
+       
 
         window.onload = async function () {
 
@@ -67,7 +53,7 @@
     </div>
 
 
-
+<div>purchase page</div>
 
 
 
@@ -90,32 +76,30 @@
 
         <div class="gird-container">
             <div>
-                <label>Likes</label>
-                <label id="numLikes"></label>
+                <label>Add</label>
             </div>
            <div>
-            <input type="button" onclick="likes()" value="like">
+            <input type="button" onclick="addcard(1)" value="+">
            </div>
         </div>
 
         <div class="gird-container">
             <div>
-                <label>Dislikes</label>
-                <label id="numDislikes"></label>
+                <label>Remove</label>
             </div>
 
             <div>
-                <input type="button" onclick="dislikes()" value="dislike">
+                <input type="button" onclick="addcard(0)" value="-">
             </div>
         </div>
+
+        <label id="qty"></label>
 
 
 
 
         <!-- IMPORTANT -->
-    <p id="pokid" style="visibility: hidden;">
-        <%= id %>
-    </p>
+    <p id="pokid" style="visibility: hidden;"><%= id %></p>
 
 </body>
 

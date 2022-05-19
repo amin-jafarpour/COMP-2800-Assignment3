@@ -16,7 +16,8 @@ app.use(bodyparser.json());
 const cors = require('cors');
 const { findSourceMap } = require('module');
 app.use(cors());
-const session = require('express-session')
+const session = require('express-session');
+const { query } = require('express');
 //***********************************************************************************************************************
 app.use(session({ secret: 'ssshhhhh', saveUninitialized: true, resave: true }));
 
@@ -78,6 +79,12 @@ function findUserDB(credentials, next) {
     next(data);
   });
 }
+
+// function userCardDB(credentials, next) {
+//   userModel.find({ "username": credentials}, function (err, data) {
+//     next(data);
+//   });
+// }
 
 
 //helper
@@ -152,7 +159,7 @@ app.post('/login', function (req, res) {
     console.log(data, data.length);
     if (data.length) {
       req.session.authenticated = true
-      req.session.user = req.body.username;
+      req.session.username = req.body.username;
       res.redirect('/home');
     } else {
       res.send("invalid username or password");
@@ -168,6 +175,98 @@ app.get('/home', authenticateUser, function (req, res) {
 app.get('/pokemon/:id', authenticateUser, function (req, res) {
   fetchPokemonDB(req.params.id, (data) => res.json(data));
 });
+
+
+
+
+
+app.get('/purchase/:id', authenticateUser, function (req, res) {
+  poksModel.find({ "id": req.params.id }, { _id: 0, id: 1, name: 1, weight: 1, height: 1, species: 1 }, function (err, properties) {
+    if (err) {
+      console.log("Error " + err);
+    } else {
+      res.render("purchasepage.ejs", {
+        "id": properties[0].id,
+        "name": properties[0].name,
+        "weight": properties[0].weight,
+        "height": properties[0].height,
+        "species": properties[0].species
+      });
+    }
+  });
+});
+
+
+app.get('/addcard/:id/:increment', authenticateUser, function (req, res) {
+  //fetchPokemonDB(req.params.id, (data) => res.json(data));
+  console.log(req.session.username);
+  fetchUserCardDB(req.session.username, req.params.id, parseInt(req.params.increment), (data)=>res.send(data));
+});
+
+
+// app.get('/removecard/:id', authenticateUser, function (req, res) {
+//   //fetchPokemonDB(req.params.id, (data) => res.json(data));
+// });
+
+
+
+
+
+function fetchUserCardDB(username, id, increment, next) {
+
+  userModel.find({"username": username}, function(err, data){
+    console.log(username, "...");
+
+    let cards = data[0].shoppingcard;
+    let added = false;
+    let qty = 0;
+    for(let i = 0; i < cards.length; ++i){
+        if(cards[i].id == id && increment){
+          cards[i].qty++;
+          qty =  cards[i].qty;
+          added = true;
+          break;
+        }
+        else{
+          if(cards[i].qty > 0){
+            cards[i].qty--;
+          }
+          qty =  cards[i].qty;
+          added = true;
+          break;
+        }
+    }
+    if(!added){
+      cards.push({"id": id, "qty": 1});
+      qty =  1;
+    }
+    userModel.updateOne({"username": username}, {$set: {"shoppingcard":cards}}, ()=>next({"id": id, "qty":qty}));})
+  }
+
+
+
+//{ $push: { <field1>: <value1>, ... } }
+//  { $push: { scores: 89 } }
+//$pull: { 'software.services': "yahoo" }}
+//  { $pullAll: { bar: [ 8 ] } } 
+//db.students.insertOne( { _id: 1, scores: [ 44, 78, 38, 80 ] } )
+
+app.get('/pokemonpurchase/:id', authenticateUser, function (req, res) {
+  poksModel.find({ "id": req.params.id }, { _id: 0, id: 1, name: 1, weight: 1, height: 1, species: 1 }, function (err, properties) {
+    if (err) {
+      console.log("Error " + err);
+    } else {
+      res.render("profile.ejs", {
+        "id": properties[0].id,
+        "name": properties[0].name,
+        "weight": properties[0].weight,
+        "height": properties[0].height,
+        "species": properties[0].species
+      });
+    }
+  });
+});
+
 
 
 
