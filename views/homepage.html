@@ -40,6 +40,20 @@
             $("main").append(div);
         }
 
+        function getPurchaseLog(){
+
+            $.ajax({
+                    type: "GET",
+                    url: `./pokemon/${randomPokID}`,
+                    success: function (jsonObj) {
+                        console.log(randomPokID,"pokemon data recevied", jsonObj);
+                        const log = document.getElementById('purchaselog');
+                    }
+                })
+           
+
+        }
+
 
         function setup() {
 
@@ -54,6 +68,10 @@
 </head>
 
 <body>
+
+    <div id="purchaselog">
+
+    </div>
 
     <main></main>
 

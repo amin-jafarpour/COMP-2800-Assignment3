@@ -262,13 +262,13 @@ function addUserCardDB(username, id, next) {
     function getUserPurchaseDB(username, next){
       userModel.find({"username": username}, function(err, data){
         let cards = data[0].shoppingcard;
-        let purchaseSummary = 'Details:\n';
+        //let purchaseSummary = 'Details:\n';
         let cost = 0.0;
         for(let i = 0; i < cards.length; ++i){
-          purchaseSummary += `Pokemon ID: ${cards[i].id} - QTY: ${cards[i].qty}\n`;
+          //purchaseSummary += `Pokemon ID: ${cards[i].id} - QTY: ${cards[i].qty}\n`;
           cost += 30 * cards[i].qty;
         } 
-        next({"summary": purchaseSummary, "cost": cost});
+        next({"cards": cards, "cost": cost});
       })
     }
 
@@ -279,8 +279,8 @@ function addUserCardDB(username, id, next) {
           next("nothing in the card");
           return;
         }
-        let purchaseDetails = JSON.stringify(cards);
-        userModel.updateOne({"username": username}, {$set: {"shoppingcard":[]}, $push: {"timeline": {"details": purchaseDetails, time: new Date()}}}, ()=>next("purchase procssed"))
+        //let purchaseDetails = JSON.stringify(cards);
+        userModel.updateOne({"username": username}, {$set: {"shoppingcard":[]}, $push: {"timeline": {"cards": cards, time: new Date()}}}, ()=>next("purchase procssed"))
       });
     }
 
