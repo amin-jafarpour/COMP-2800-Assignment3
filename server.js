@@ -46,7 +46,8 @@ const UserSchema = new mongoose.Schema({
   "firstname": String,
   "lastname": String,
   "password": String,
-  "shoppingcard": Array
+  "shoppingcard": Array,
+  "timeline": Array
 });
 
 const poklogsModel = mongoose.model("poklogs", logSchema);
@@ -269,6 +270,18 @@ function addUserCardDB(username, id, next) {
       })
     }
 
+    function processUserPurchaseDB(username, next){
+      userModel.find({"username": username}, function(err, data){
+        let cards = data[0].shoppingcard;
+        if(cards.length <= 0){
+          next("nothing in the card");
+          return;
+        }
+        let purchaseDetails = JSON.stringify(cards);
+        userModel.updateOne({"username": username}, {$set: {"shoppingcard":[]}, $push: {"timeline": {"details": purchaseDetails, time: new Date()}}}, ()=>next("purchase procssed"))
+      });
+    }
+
 
 
 //{ $push: { <field1>: <value1>, ... } }
@@ -297,6 +310,13 @@ app.get('/pokemonpurchase/:id', authenticateUser, function (req, res) {
 app.get('/summarypurchase', authenticateUser, function (req, res) {
   getUserPurchaseDB(req.session.username, (data)=>res.json(data));
 });
+
+app.get('/processpurchase', authenticateUser, function (req, res) {
+  processUserPurchaseDB(req.session.username, (data)=>res.json(data));
+});
+
+
+
 
 
 
