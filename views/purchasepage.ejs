@@ -17,6 +17,36 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
     <script>
+        async function likes() {
+            try {
+                await $.ajax({
+                    type: "GET",
+                    url: `http://localhost:5000/log/like/${$('#pokid').text()}`,
+                    success: function (data) {
+                        $('#numLikes').text(data[0].likes);
+
+                    }
+                })
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+
+        async function dislikes() {
+            try {
+                await $.ajax({
+                    type: "GET",
+                    url: `http://localhost:5000/log/dislike/${$('#pokid').text()}`,
+                    success: function (data) {
+                        $('#numDislikes').text(data[0].dislikes);
+                    }
+                })
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
         async function addcard() {
             try {
                 await $.ajax({
@@ -45,10 +75,6 @@
             }
         }
 
-       
-
-
-
         window.onload = async function () {
 
             await $.ajax({
@@ -62,10 +88,12 @@
             })
 
             document.getElementsByTagName("style")[0].innerHTML = document.getElementById('css').innerHTML;
-            
+
 
         }
     </script>
+
+
 </head>
 
 <body>
@@ -89,6 +117,27 @@
         </p>
         <p>species : <%= species %>
         </p>
+    </div>
+
+    <div class="gird-container">
+        <div>
+            <label>Likes</label>
+            <label id="numLikes"></label>
+        </div>
+        <div>
+            <input type="button" onclick="likes()" value="like">
+        </div>
+    </div>
+
+    <div class="gird-container">
+        <div>
+            <label>Dislikes</label>
+            <label id="numDislikes"></label>
+        </div>
+
+        <div>
+            <input type="button" onclick="dislikes()" value="dislike">
+        </div>
     </div>
 
 
@@ -120,7 +169,6 @@
     <div id="css" style="visibility: hidden;">
         <%=css%>
     </div>
-
 </body>
 
 </html>
