@@ -16,6 +16,10 @@ app.use(bodyparser.json());
 const cors = require('cors');
 const { findSourceMap } = require('module');
 app.use(cors());
+const session = require('express-session')
+//***********************************************************************************************************************
+app.use(session({ secret: 'ssshhhhh', saveUninitialized: true, resave: true }));
+
 //***********************************************************************************************************************/
 
 mongoose.connect("mongodb://localhost:27017/log",
@@ -49,7 +53,7 @@ const userModel = mongoose.model("user", UserSchema);
 //************************************************************************************************************* */
 
 
-function addUserDB(user){
+function addUserDB(user) {
   userModel.count({ "username": user.username }, function (err, count) {
     if (err) {
       console.log("Error " + err);
@@ -62,22 +66,22 @@ function addUserDB(user){
         "shoppingcard": []
       });
     }
-    else{
-        throw "user already exists";
+    else {
+      throw "user already exists";
     }
-  });}
+  });
+}
 
 
-  function findUserDB(credentials, next){
-   userModel.find({"username": credentials.username, "password": credentials.password}, function(err, data){
-     //res.send(JSON.stringify(data))
-     next(JSON.stringify(data));
-   });
-  }
+function findUserDB(credentials, next) {
+  userModel.find({ "username": credentials.username, "password": credentials.password }, function (err, data) {
+    next(data);
+  });
+}
 
 
 //helper
-function addPokemonDB(pokemon){
+function addPokemonDB(pokemon) {
   poksModel.count({ "id": pokemon.id }, function (err, count) {
     if (err) {
       console.log("Error " + err);
@@ -90,12 +94,27 @@ function addPokemonDB(pokemon){
         "species": pokemon.species,
         "type": pokemon.type
       });
-    }});
+    }
+  });
 }
 
+function fetchPokemonDB(id, next) {
+  console.log(id);
+
+  poksModel.find({ "id": id }, function (err, data) {
+    if (err) {
+      console.log("Error " + err);
+    }
+    else {
+      next(data);
+    }
+  });
+}
+
+
 //helper
-function addPokemonLogDB(pokemon){
-  poklogsModel.count({ "id": pokemon.id}, function (err, count) {
+function addPokemonLogDB(pokemon) {
+  poklogsModel.count({ "id": pokemon.id }, function (err, count) {
     if (err) {
       console.log("Error " + err);
     } else if (count == 0) {
@@ -104,33 +123,55 @@ function addPokemonLogDB(pokemon){
         likes: 0,
         dislikes: 0
       });
-    }});
+    }
+  });
+}
+//********************************************************************************************************************** */
+
+function authenticateUser(req, res, next) {
+  if (req.session.authenticated) {
+    next();
+  }
+  else {
+    res.redirect('./loginpage.html');
+  }
 }
 
+//********************************************************************************************************************** */
 
 
-/*********************************************************************************************************** */
-
-// app.get('/signuppage', function(req, res){
-//   //res.sendFile('signup-page.html',{ root: __dirname });
-//   res.sendFile('./signuppage.html');
-// });
-
-// app.get('/loginpage', function(req, res){
-//   //res.sendFile('login-page.html',{ root: __dirname });
-//   res.sendFile('./loginpage.html');
-// });
-
-app.post('/signup', function(req, res){
-  const user = {"username": req.body.username, "firstname": req.body.username, "lastname": req.body.username,"password": req.body.username};
+app.post('/signup', function (req, res) {
+  const user = { "username": req.body.username, "firstname": req.body.username, "lastname": req.body.username, "password": req.body.username };
   addUserDB(user);
 
-  res.redirect('./loginpage.html');
+  res.send('Account Created');
 });
 
-app.post('/login', function(req, res){
-  findUserDB({"username": req.body.username, "password": req.body.password}, (data)=>res.send(data));
+app.post('/login', function (req, res) {
+  findUserDB({ "username": req.body.username, "password": req.body.password }, function (data) {
+    console.log(data, data.length);
+    if (data.length) {
+      req.session.authenticated = true
+      req.session.user = req.body.username;
+      res.redirect('/home');
+    } else {
+      res.send("invalid username or password");
+    }
+  });
 });
+
+
+app.get('/home', authenticateUser, function (req, res) {
+  res.sendFile('views/homepage.html', { root: __dirname });
+});
+
+app.get('/pokemon/:id', authenticateUser, function (req, res) {
+  fetchPokemonDB(req.params.id, (data) => res.json(data));
+});
+
+
+
+
 
 
 
@@ -278,12 +319,15 @@ app.get('/profile/:id', function (req, res) {
 
 
 
-function populateDB(){
+function populateDB() {
   const pokemonText = fs.readFileSync('./pokemon-details.json', 'utf8');
   pokemonObjs = JSON.parse(pokemonText).pokes;
-  for(let i = 1; i <= 800; ++i){
-    addPokemonDB(pokemonObjs.filter(pok => pok.id == i));
-    addPokemonLogDB(pokemonObjs.filter(pok => pok.id == i));
+  for (let i = 1; i <= 800; ++i) {
+    //console.log(pokemonObjs.filter(pok => pok.id == i)[0].id);
+    if (pokemonObjs.filter(pok => pok.id == i)[0] != undefined) {
+      addPokemonDB(pokemonObjs.filter(pok => pok.id == i)[0]);
+      addPokemonLogDB(pokemonObjs.filter(pok => pok.id == i)[0]);
+    }
   }
 }
 
@@ -291,7 +335,7 @@ function populateDB(){
 app.listen(5000, function (err) {
   if (err)
     console.log(err);
-    populateDB();
+  populateDB();
 });
 
 
