@@ -328,6 +328,8 @@ app.get('/processpurchase', authenticateUser, function (req, res) {
 
 
 
+
+//////////////////////////////////////////////////////////**** */
 app.get('/log/poklogs', function (req, res) {
   poklogsModel.find({}, { _id: 0, id: 1, likes: 1, dislikes: 1 }, function (err, logs) {
     if (err) {
