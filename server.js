@@ -142,7 +142,7 @@ function authenticateUser(req, res, next) {
     next();
   }
   else {
-    res.redirect('./loginpage.html');
+    res.redirect('/loginpage.html');
   }
 }
 
