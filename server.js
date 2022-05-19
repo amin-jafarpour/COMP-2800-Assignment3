@@ -18,6 +18,7 @@ const { findSourceMap } = require('module');
 app.use(cors());
 const session = require('express-session');
 const { query } = require('express');
+const { parse } = require('path');
 //***********************************************************************************************************************
 app.use(session({ secret: 'ssshhhhh', saveUninitialized: true, resave: true }));
 
@@ -197,51 +198,67 @@ app.get('/purchase/:id', authenticateUser, function (req, res) {
 });
 
 
-app.get('/addcard/:id/:increment', authenticateUser, function (req, res) {
+app.get('/addcard/:id/', authenticateUser, function (req, res) {
   //fetchPokemonDB(req.params.id, (data) => res.json(data));
-  console.log(req.session.username);
-  fetchUserCardDB(req.session.username, req.params.id, parseInt(req.params.increment), (data)=>res.send(data));
+  //fetchUserCardDB(req.session.username, req.params.id, parseInt(req.params.increment), (data)=>res.send(data));
+  addUserCardDB(req.session.username, parseInt(req.params.id), (data)=>res.json(data));
 });
 
 
-// app.get('/removecard/:id', authenticateUser, function (req, res) {
-//   //fetchPokemonDB(req.params.id, (data) => res.json(data));
-// });
+app.get('/removecard/:id', authenticateUser, function (req, res) {
+  //fetchPokemonDB(req.params.id, (data) => res.json(data));
+  removeUserCardDB(req.session.username, parseInt(req.params.id), (data)=>res.json(data));
+});
 
 
 
 
 
-function fetchUserCardDB(username, id, increment, next) {
+function addUserCardDB(username, id, next) {
 
   userModel.find({"username": username}, function(err, data){
-    console.log(username, "...");
-
-    let cards = data[0].shoppingcard;
-    let added = false;
-    let qty = 0;
-    for(let i = 0; i < cards.length; ++i){
-        if(cards[i].id == id && increment){
-          cards[i].qty++;
-          qty =  cards[i].qty;
-          added = true;
-          break;
+      let cards = data[0].shoppingcard;
+      let newQty = 0;
+      let exists = false;
+      for(let i = 0; i < cards.length; ++i){
+        if(cards[i].id == id){
+            cards[i].qty = cards[i].qty  + 1;
+            newQty = cards[i].qty;
+            exists = true;
+            break;
         }
-        else{
-          if(cards[i].qty > 0){
-            cards[i].qty--;
-          }
-          qty =  cards[i].qty;
-          added = true;
-          break;
-        }
-    }
-    if(!added){
-      cards.push({"id": id, "qty": 1});
-      qty =  1;
-    }
-    userModel.updateOne({"username": username}, {$set: {"shoppingcard":cards}}, ()=>next({"id": id, "qty":qty}));})
+      }
+      if(!exists){
+        cards.push({"id": id, "qty": 1});
+        newQty = 1;
+      }
+    userModel.updateOne({"username": username}, {$set: {"shoppingcard":cards}}, ()=>next({"id": id, "qty":newQty}));})
   }
+
+
+  function removeUserCardDB(username, id, next) {
+
+    userModel.find({"username": username}, function(err, data){
+      let cards = data[0].shoppingcard;
+      let newQty = 0;
+      let i = 0;
+      for(; i < cards.length; ++i){
+          if(cards[i].id == id && cards[i].qty > 0){
+            cards[i].qty =  cards[i].qty - 1;
+            newQty = cards[i].qty;
+            break;
+          }
+          else if(cards[i].id == id){
+            break;
+          }
+      }
+      cards = cards.filter((item)=>item.qty>0);
+      // if(cards[i].qty == 0){
+      //   cards = cards.splice(i, 1);
+      //   console.log(cards, i);
+      // }
+      userModel.updateOne({"username": username}, {$set: {"shoppingcard":cards}}, ()=>next({"id": id, "qty":newQty}));})
+    }
 
 
 
