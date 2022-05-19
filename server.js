@@ -213,6 +213,10 @@ app.get('/removecard/:id', authenticateUser, function (req, res) {
   removeUserCardDB(req.session.username, parseInt(req.params.id), (data)=>res.json(data));
 });
 
+app.get('/orderlog', authenticateUser, function (req, res) {
+    res.sendFile('views/orderlog.html', {root: __dirname});
+});
+
 
 
 
