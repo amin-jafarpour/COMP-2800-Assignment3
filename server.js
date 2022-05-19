@@ -187,7 +187,7 @@ app.get('/purchase/:id', authenticateUser, function (req, res) {
     if (err) {
       console.log("Error " + err);
     } else {
-      const css = fs.readFileSync("./views/purchase.css",'utf8');
+      const css = fs.readFileSync("./views/purchasepage.css",'utf8');
       res.render("purchasepage.ejs", {
         "id": properties[0].id,
         "name": properties[0].name,

@@ -45,22 +45,7 @@
             }
         }
 
-        function getPurchaseLog() {
-
-            $.ajax({
-                type: "GET",
-                url: `/summarypurchase`,
-                success: function (jsonObj) {
-                    console.log(jsonObj, "reeeed");
-                    const log = document.getElementById('purchaselog');
-                    const str = JSON.stringify(jsonObj);
-                    log.innerHTML = str;
-                }
-            })
-
-
-        }
-
+       
 
 
 
@@ -77,7 +62,7 @@
             })
 
             document.getElementsByTagName("style")[0].innerHTML = document.getElementById('css').innerHTML;
-            getPurchaseLog();
+            
 
         }
     </script>
