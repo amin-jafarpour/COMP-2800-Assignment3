@@ -51,7 +51,7 @@
                     url: `/addcard/${id}}`,
                     success: function (data) {
                         console.log("heeeey", data.qty);
-                        $(`#qty${id}`).text(data.qty);
+                        $(`#qty${id}`).text("QTY: " + data.qty);
                     }
                 })
             } catch (error) {
@@ -65,7 +65,7 @@
                     type: "GET",
                     url: `/removecard/${id}}`,
                     success: function (data) {
-                        $(`#qty${id}`).text(data.qty);
+                        $(`#qty${id}`).text("QTY: " + data.qty);
                     }
                 })
             } catch (error) {
