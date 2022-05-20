@@ -142,7 +142,7 @@ function getPurchasehistory(username, next){
 
       history = history.sort(function(p1, p2){return p1.time > p2.time});
 
-      next(history);
+      next(history);z
     }
   });
 }
@@ -269,7 +269,6 @@ function addUserCardDB(username, id, next) {
     userModel.updateOne({"username": username}, {$set: {"shoppingcard":cards}}, ()=>next({"id": id, "qty":newQty}));})
   }
 
-
   function removeUserCardDB(username, id, next) {
 
     userModel.find({"username": username}, function(err, data){
@@ -345,30 +344,15 @@ app.get('/logout', authenticateUser, (req, res) => {
   res.redirect('/');
 });
 
-
-app.get('/purchasehistory', authenticateUser, (req, res) => {
-  getPurchasehistory(req.session.username, (data)=>res.json(data))
+app.get('/checkout', authenticateUser, (req, res)=>{
+  res.render('checkout.ejs');
 });
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+app.get('/purchasehistory', authenticateUser, (req, res) => {
+  getPurchasehistory(req.session.username, (data)=>res.json(data))
+});
 //////////////////////////////////////////////////////////**** */
 app.get('/log/poklogs', function (req, res) {
   poklogsModel.find({}, { _id: 0, id: 1, likes: 1, dislikes: 1 }, function (err, logs) {
@@ -499,11 +483,6 @@ app.get('/profile/:id', function (req, res) {
     }
   });
 });
-
-
-
-
-
 
 function populateDB() {
   const pokemonText = fs.readFileSync('./pokemon-details.json', 'utf8');

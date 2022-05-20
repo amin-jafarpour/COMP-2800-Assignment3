@@ -41,70 +41,70 @@
             $("main").append(div);
         }
 
-        function addItem(jsonObj){
-            const add = document.createElement('button');
-            const remove = document.createElement('button');
-            const div = document.createElement('div');
-            const qty = document.createElement('p');
-            const p = document.createElement('p');
-            add.onclick = function (){addcard(jsonObj.id)};
-            add.innerHTML = "+";
-            remove.onclick = function (){removecard(jsonObj.id)};
-            remove.innerHTML = "-";
-            p.textContent = `ID:${jsonObj.id}`;
-            qty.id = `qty${jsonObj.id}`;
-            div.appendChild(add);
-            div.appendChild(remove);
-            div.appendChild(qty);
-            div.appendChild(p);
-            document.getElementById('purchaselog').appendChild(div);
-        }
+        // function addItem(jsonObj){
+        //     const add = document.createElement('button');
+        //     const remove = document.createElement('button');
+        //     const div = document.createElement('div');
+        //     const qty = document.createElement('p');
+        //     const p = document.createElement('p');
+        //     add.onclick = function (){addcard(jsonObj.id)};
+        //     add.innerHTML = "+";
+        //     remove.onclick = function (){removecard(jsonObj.id)};
+        //     remove.innerHTML = "-";
+        //     p.textContent = `ID:${jsonObj.id}`;
+        //     qty.id = `qty${jsonObj.id}`;
+        //     div.appendChild(add);
+        //     div.appendChild(remove);
+        //     div.appendChild(qty);
+        //     div.appendChild(p);
+        //     document.getElementById('purchaselog').appendChild(div);
+        // }
 
-        function getPurchaseLog() {
+        // function getPurchaseLog() {
 
-            $.ajax({
-                type: "GET",
-                url: `/summarypurchase`,
-                success: function (jsonObj) {
-                    for(let i = 0; i < jsonObj.cards.length; ++i){
-                        console.log(jsonObj.cards[i], "yeeesd");
-                        addItem(jsonObj.cards[i]);
-                    }
+        //     $.ajax({
+        //         type: "GET",
+        //         url: `/summarypurchase`,
+        //         success: function (jsonObj) {
+        //             for(let i = 0; i < jsonObj.cards.length; ++i){
+        //                 console.log(jsonObj.cards[i], "yeeesd");
+        //                 addItem(jsonObj.cards[i]);
+        //             }
                     
-                }
-            })
+        //         }
+        //     })
 
 
-        }
+        // }
 
-        async function addcard(id) {
-            try {
-                await $.ajax({
-                    type: "GET",
-                    url: `/addcard/${id}}`,
-                    success: function (data) {
-                        console.log("heeeey", data.qty);
-                        $(`#qty${id}`).text(data.qty);
-                    }
-                })
-            } catch (error) {
-                console.log(error);
-            }
-        }
+        // async function addcard(id) {
+        //     try {
+        //         await $.ajax({
+        //             type: "GET",
+        //             url: `/addcard/${id}}`,
+        //             success: function (data) {
+        //                 console.log("heeeey", data.qty);
+        //                 $(`#qty${id}`).text(data.qty);
+        //             }
+        //         })
+        //     } catch (error) {
+        //         console.log(error);
+        //     }
+        // }
 
-        async function removecard(id) {
-            try {
-                await $.ajax({
-                    type: "GET",
-                    url: `/removecard/${id}}`,
-                    success: function (data) {
-                        $(`#qty${id}`).text(data.qty);
-                    }
-                })
-            } catch (error) {
-                console.log(error);
-            }
-        }
+        // async function removecard(id) {
+        //     try {
+        //         await $.ajax({
+        //             type: "GET",
+        //             url: `/removecard/${id}}`,
+        //             success: function (data) {
+        //                 $(`#qty${id}`).text(data.qty);
+        //             }
+        //         })
+        //     } catch (error) {
+        //         console.log(error);
+        //     }
+        // }
 
 
 
@@ -116,7 +116,7 @@
                 getPok();
             }
 
-            getPurchaseLog();
+            //getPurchaseLog();
 
         }
 
