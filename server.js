@@ -120,6 +120,35 @@ function fetchPokemonDB(id, next) {
   });
 }
 
+function getPurchasehistory(username, next){
+  userModel.find({ "username": username}, function (err, data) {
+    if (err) {
+      console.log("Error " + err);
+    } else{
+      let purchases = data[0].timeline;
+      history = [];
+      for(let i = 0; i < purchases.length; ++i){
+        let str = "";
+        for(let j = 0; j < purchases[i].length; ++j){
+          for(let k = 0;  k < purchases[i][j].cards.length; ++k){
+            history += `${purchases[i][j].cards[k].qty} of Pokemon ${purchases[i][j][k].cards[k].id}, `;
+          }
+         
+        }
+
+        str += `purchased on ${purchases[i].time.getFullYear()}-${purchases[i].time.getMonth()}-${purchases[i].time.getDate()}`;
+        history.push({"time": purchases[i].time, "str": str});
+      }
+
+      //dates = dates.sort(function(d1, d2){return d1 > d2});
+
+      history = history.sort(function(p1, p2){return p1.time > p2.time});
+
+      next(history);
+    }
+  });
+}
+
 
 //helper
 function addPokemonLogDB(pokemon) {
@@ -318,6 +347,10 @@ app.get('/logout', authenticateUser, (req, res) => {
   res.redirect('/');
 });
 
+
+app.get('/purchasehistory', authenticateUser, (req, res) => {
+  getPurchasehistory(req.session.username, (data)=>res.json(data))
+});
 
 
 
