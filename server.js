@@ -129,13 +129,11 @@ function getPurchasehistory(username, next){
       history = [];
       for(let i = 0; i < purchases.length; ++i){
         let str = "";
-        for(let j = 0; j < purchases[i].length; ++j){
-          for(let k = 0;  k < purchases[i][j].cards.length; ++k){
-            history += `${purchases[i][j].cards[k].qty} of Pokemon ${purchases[i][j][k].cards[k].id}, `;
-          }
-         
+        for(let j = 0; j < purchases[i].cards.length; ++j){
+          console.log(purchases[i].cards[j].qty, "heey");
+        
+         str += `#${purchases[i].cards[j].qty} Pokemons of ID: ${purchases[i].cards[j].id}, `;
         }
-
         str += `purchased on ${purchases[i].time.getFullYear()}-${purchases[i].time.getMonth()}-${purchases[i].time.getDate()}`;
         history.push({"time": purchases[i].time, "str": str});
       }
