@@ -251,9 +251,9 @@ app.get('/search', function(req, res) {
 
 
 app.post('/signup', function(req, res) {
-    const inputusername = "";
+    let inputusername = "";
     if (req.body.username != undefined) {
-        inputusername = req.body.usernametoLowerCase();
+        inputusername = req.body.username.toLowerCase();
     }
     const user = { "username": inputusername, "firstname": req.body.firstname, "lastname": req.body.lastname, "password": req.body.password };
     addUserDB(user);
@@ -262,9 +262,9 @@ app.post('/signup', function(req, res) {
 });
 
 app.post('/login', function(req, res) {
-    const inputusername = "";
+    let inputusername = "";
     if (req.body.username != undefined) {
-        inputusername = req.body.usernametoLowerCase();
+        inputusername = req.body.username.toLowerCase();
     }
     findUserDB({ "username": inputusername, "password": req.body.password }, function(data) {
         console.log(data, data.length);
@@ -355,17 +355,18 @@ app.get('/checkout', authenticateUser, (req, res) => {
 
 
 app.get('/purchasehistory', authenticateUser, (req, res) => {
+    res.sendFile("views/purchasehistory.html", { root: __dirname });
+});
+
+
+app.get('/historyitems', authenticateUser, (req, res) => {
     getPurchasehistory(req.session.username, function(data) {
-        let content = 'div class="history-items"';
-        for (let i = 0; i < data.length; ++i) {
-            content += "<div>";
-            content += `${data[i].time}: ${data[i].str}`;
-            content += '</div>'
-        }
-        content += '</div>'
-        res.send(content);
+        res.json(data);
     })
 });
+
+
+
 
 
 
