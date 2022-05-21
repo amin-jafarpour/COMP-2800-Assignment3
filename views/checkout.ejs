@@ -29,15 +29,29 @@
             background-color: #f2f2f2;
             color: rgb(19, 16, 16);
         }
+        
+        #purchaselog {
+            width: 100%;
+        }
+        
+        .item-container {
+            width: 25%;
+            display: flex;
+            flex-direction: row;
+            gap: 10px;
+        }
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
+        var totalCost = 0;
+
         function addItem(jsonObj) {
             const add = document.createElement('button');
             const remove = document.createElement('button');
             const div = document.createElement('div');
-            const qty = document.createElement('p');
-            const p = document.createElement('p');
+            const qty = document.createElement('span');
+            const p = document.createElement('span');
+            const cost = document.createElement('span');
             add.onclick = function() {
                 addcard(jsonObj.id)
             };
@@ -49,11 +63,16 @@
             p.textContent = `ID:${jsonObj.id}`;
             qty.id = `qty${jsonObj.id}`;
             qty.innerHTML = `QTY:${jsonObj.qty}`;
+            cost.id = `cost${jsonObj.id}`;
+            cost.innerHTML = `${jsonObj.qty} * ${"$30"} =${jsonObj.qty * 30}`;
             div.appendChild(add);
             div.appendChild(remove);
             div.appendChild(qty);
             div.appendChild(p);
+            div.appendChild(cost);
+            div.className = "item-container";
             document.getElementById('purchaselog').appendChild(div);
+            totalCost += jsonObj.qty * 30;
         }
 
         function getPurchaseLog() {
@@ -81,6 +100,8 @@
                     success: function(data) {
                         console.log("heeeey", data.qty);
                         $(`#qty${id}`).text("QTY: " + data.qty);
+                        $(`#cost${id}`).text(`${data.qty} * ${"$30"} =${data.qty * 30}`);
+                        totalCost += 30;
                     }
                 })
             } catch (error) {
@@ -95,6 +116,10 @@
                     url: `/removecard/${id}}`,
                     success: function(data) {
                         $(`#qty${id}`).text("QTY: " + data.qty);
+                        $(`#cost${id}`).text(`${data.qty} * ${"$30"} =${data.qty * 30}`);
+                        if (data.qty != 0) {
+                            totalCost -= 30;
+                        }
                     }
                 })
             } catch (error) {
