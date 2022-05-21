@@ -9,7 +9,6 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
-
         // async function loadPok() {
         //     try {
         //         await $.ajax({
@@ -54,7 +53,7 @@
                 $.ajax({
                     type: "GET",
                     url: `http://localhost:5000/pok/${randomPokID}`,
-                    success: function (jsonObj) {
+                    success: function(jsonObj) {
                         appendPok(jsonObj);
                     }
                 })
@@ -65,14 +64,12 @@
 
         }
 
-        window.onload =  async function () {
+
+        window.onload = async function() {
             for (let i = 0; i < 9; ++i) {
-                 getPok();
+                getPok();
             }
         }
-
-
-
     </script>
 </head>
 
@@ -96,7 +93,7 @@
                 Sign up
             </a>
 
-            <a href="./search.html" style="float: right; margin-right: 10px;" id="search-link">
+            <a href="search.html" style="float: right; margin-right: 10px;" id="search-link">
                 Search Page
             </a>
 
@@ -125,12 +122,9 @@
             Copyright © Your Website 2022
         </h5>
         <div class="social-media-footer">
-            <img src="https://blog.hootsuite.com/wp-content/uploads/2018/09/Twitter_Logo_Blue-150x150.png" alt=""
-                width="50px" height="50px">
-            <img src="https://blog.hootsuite.com/wp-content/uploads/2018/09/glyph-logo_May2016-150x150.png" alt=""
-                width="50px" height="50px">
-            <img src="https://blog.hootsuite.com/wp-content/uploads/2018/09/snap-ghost-yellow-310x309.png" alt="12"
-                width="50px" height="50px">
+            <img src="https://blog.hootsuite.com/wp-content/uploads/2018/09/Twitter_Logo_Blue-150x150.png" alt="" width="50px" height="50px">
+            <img src="https://blog.hootsuite.com/wp-content/uploads/2018/09/glyph-logo_May2016-150x150.png" alt="" width="50px" height="50px">
+            <img src="https://blog.hootsuite.com/wp-content/uploads/2018/09/snap-ghost-yellow-310x309.png" alt="12" width="50px" height="50px">
         </div>
     </footer>
 

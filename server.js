@@ -240,6 +240,15 @@ function authenticateUser(req, res, next) {
 
 //********************************************************************************************************************** */
 
+app.get('/search', function(req, res) {
+    if (req.session.authenticated) {
+        res.render('search.ejs', { username: req.session.username });
+    } else {
+        res.redirect('/search.html');
+    }
+});
+
+
 
 app.post('/signup', function(req, res) {
     const user = { "username": req.body.username, "firstname": req.body.username, "lastname": req.body.username, "password": req.body.username };

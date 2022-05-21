@@ -23,7 +23,7 @@
             div.className = "grid-item";
             img.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${properties.id}.png`
             h1.textContent = properties.name;
-            a.href = `profile/${properties.id}`;
+            a.href = `purchase/${properties.id}`;
 
             a.appendChild(img);
             div.appendChild(a);
@@ -64,7 +64,7 @@
             for (let i = 1; i <= 30; ++i) {
 
                 await $.ajax({
-                    url: `http://localhost:5000/pok/${i}/`,
+                    url: `pok/${i}/`,
                     success: function(jsonObj) {
 
 
@@ -96,9 +96,19 @@
 
 <body>
 
+    <nav id="navbar">
+        <ul>
+            <a href="/logout">
+                Log out
+            </a>
+
+            <a href="/checkout">checkout</a>
+        </ul>
+    </nav>
+
     <header>
         <h1>
-            Search Page
+            <%=username%>, what are you looking for?
         </h1>
     </header>
     <br/>
