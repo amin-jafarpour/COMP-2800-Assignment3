@@ -251,7 +251,7 @@ app.get('/search', function(req, res) {
 
 
 app.post('/signup', function(req, res) {
-    const user = { "username": req.body.username, "firstname": req.body.username, "lastname": req.body.username, "password": req.body.username };
+    const user = { "username": req.body.username, "firstname": req.body.firstname, "lastname": req.body.lastname, "password": req.body.password };
     addUserDB(user);
 
     res.send('Account Created');
