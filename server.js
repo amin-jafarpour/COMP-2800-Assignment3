@@ -251,14 +251,22 @@ app.get('/search', function(req, res) {
 
 
 app.post('/signup', function(req, res) {
-    const user = { "username": req.body.username, "firstname": req.body.firstname, "lastname": req.body.lastname, "password": req.body.password };
+    const inputusername = "";
+    if (req.body.username != undefined) {
+        inputusername = req.body.usernametoLowerCase();
+    }
+    const user = { "username": inputusername, "firstname": req.body.firstname, "lastname": req.body.lastname, "password": req.body.password };
     addUserDB(user);
 
     res.send('Account Created');
 });
 
 app.post('/login', function(req, res) {
-    findUserDB({ "username": req.body.username, "password": req.body.password }, function(data) {
+    const inputusername = "";
+    if (req.body.username != undefined) {
+        inputusername = req.body.usernametoLowerCase();
+    }
+    findUserDB({ "username": inputusername, "password": req.body.password }, function(data) {
         console.log(data, data.length);
         if (data.length) {
             req.session.authenticated = true
