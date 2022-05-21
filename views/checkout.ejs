@@ -138,6 +138,7 @@
                     success: function(data) {
                         $(`#payment-details`).text(JSON.stringify(data));
                         $("#purchaselog").text("");
+                        document.getElementById('total-cost').innerHTML = 0;
                     }
                 })
             } catch (error) {
