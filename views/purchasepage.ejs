@@ -22,7 +22,7 @@
                 await $.ajax({
                     type: "GET",
                     url: `http://localhost:5000/log/like/${$('#pokid').text()}`,
-                    success: function (data) {
+                    success: function(data) {
                         $('#numLikes').text(data[0].likes);
 
                     }
@@ -38,7 +38,7 @@
                 await $.ajax({
                     type: "GET",
                     url: `http://localhost:5000/log/dislike/${$('#pokid').text()}`,
-                    success: function (data) {
+                    success: function(data) {
                         $('#numDislikes').text(data[0].dislikes);
                     }
                 })
@@ -52,7 +52,7 @@
                 await $.ajax({
                     type: "GET",
                     url: `/addcard/${$('#pokid').text()}`,
-                    success: function (data) {
+                    success: function(data) {
                         $('#qty').text(data.qty);
                     }
                 })
@@ -66,7 +66,7 @@
                 await $.ajax({
                     type: "GET",
                     url: `/removecard/${$('#pokid').text()}`,
-                    success: function (data) {
+                    success: function(data) {
                         $('#qty').text(data.qty);
                     }
                 })
@@ -75,12 +75,12 @@
             }
         }
 
-        window.onload = async function () {
+        window.onload = async function() {
 
             await $.ajax({
-                type: "GET",//http://localhost:5000/log/poklogs/10
+                type: "GET", //http://localhost:5000/log/poklogs/10
                 url: `http://localhost:5000/log/poklogs/${$('#pokid').text()}`,
-                success: function (data) {
+                success: function(data) {
                     $('#numLikes').text(data[0].likes);
                     $('#numDislikes').text(data[0].dislikes);
                     console.log(data);
@@ -97,7 +97,17 @@
 </head>
 
 <body>
-    <div id="logout"><a href="/logout">logout</a></div>
+
+    <nav id="navbar">
+        <ul>
+            <a href="/logout">
+                Log out
+            </a>
+
+            <a href="checkout">checkout</a>
+        </ul>
+    </nav>
+
 
     <div class="img-div">
         <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/<%= id %>.png" alt="">
@@ -108,15 +118,20 @@
     <div class="poke-info">
 
 
-        <h1>ID: <%= id %>
+        <h1>ID:
+            <%= id %>
         </h1>
-        <p>Name: <%= name %>
+        <p>Name:
+            <%= name %>
         </p>
-        <p>weight : <%= weight %>
+        <p>weight :
+            <%= weight %>
         </p>
-        <p>Height : <%= height %>
+        <p>Height :
+            <%= height %>
         </p>
-        <p>species : <%= species %>
+        <p>species :
+            <%= species %>
         </p>
     </div>
 

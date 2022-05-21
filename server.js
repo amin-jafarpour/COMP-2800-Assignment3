@@ -162,6 +162,73 @@ function addPokemonLogDB(pokemon) {
     }
   });
 }
+
+function removeUserCardDB(username, id, next) {
+
+  userModel.find({"username": username}, function(err, data){
+    let cards = data[0].shoppingcard;
+    let newQty = 0;
+    let i = 0;
+    for(; i < cards.length; ++i){
+        if(cards[i].id == id && cards[i].qty > 0){
+          cards[i].qty =  cards[i].qty - 1;
+          newQty = cards[i].qty;
+          break;
+        }
+        else if(cards[i].id == id){
+          break;
+        }
+    }
+    cards = cards.filter((item)=>item.qty>0);
+    userModel.updateOne({"username": username}, {$set: {"shoppingcard":cards}}, ()=>next({"id": id, "qty":newQty}));})
+  }
+
+  function getUserPurchaseDB(username, next){
+    userModel.find({"username": username}, function(err, data){
+      let cards = data[0].shoppingcard;
+      //let purchaseSummary = 'Details:\n';
+      let cost = 0.0;
+      for(let i = 0; i < cards.length; ++i){
+        //purchaseSummary += `Pokemon ID: ${cards[i].id} - QTY: ${cards[i].qty}\n`;
+        cost += 30 * cards[i].qty;
+      } 
+      next({"cards": cards, "cost": cost});
+    })
+  }
+
+  function processUserPurchaseDB(username, next){
+    userModel.find({"username": username}, function(err, data){
+      let cards = data[0].shoppingcard;
+      if(cards.length <= 0){
+        next("nothing in the card");
+        return;
+      }
+      //let purchaseDetails = JSON.stringify(cards);
+      userModel.updateOne({"username": username}, {$set: {"shoppingcard":[]}, $push: {"timeline": {"cards": cards, time: new Date()}}}, ()=>next("purchase procssed"))
+    });
+  }
+
+  function addUserCardDB(username, id, next) {
+
+    userModel.find({"username": username}, function(err, data){
+        let cards = data[0].shoppingcard;
+        let newQty = 0;
+        let exists = false;
+        for(let i = 0; i < cards.length; ++i){
+          if(cards[i].id == id){
+              cards[i].qty = cards[i].qty  + 1;
+              newQty = cards[i].qty;
+              exists = true;
+              break;
+          }
+        }
+        if(!exists){
+          cards.push({"id": id, "qty": 1});
+          newQty = 1;
+        }
+      userModel.updateOne({"username": username}, {$set: {"shoppingcard":cards}}, ()=>next({"id": id, "qty":newQty}));})
+    }
+
 //********************************************************************************************************************** */
 
 function authenticateUser(req, res, next) {
@@ -200,13 +267,10 @@ app.post('/login', function (req, res) {
 app.get('/home', authenticateUser, function (req, res) {
   res.sendFile('views/homepage.html', { root: __dirname });
 });
-
+//?
 app.get('/pokemon/:id', authenticateUser, function (req, res) {
   fetchPokemonDB(req.params.id, (data) => res.json(data));
 });
-
-
-
 
 
 app.get('/purchase/:id', authenticateUser, function (req, res) {
@@ -229,90 +293,15 @@ app.get('/purchase/:id', authenticateUser, function (req, res) {
 
 
 app.get('/addcard/:id/', authenticateUser, function (req, res) {
-  //fetchPokemonDB(req.params.id, (data) => res.json(data));
-  //fetchUserCardDB(req.session.username, req.params.id, parseInt(req.params.increment), (data)=>res.send(data));
   addUserCardDB(req.session.username, parseInt(req.params.id), (data)=>res.json(data));
 });
 
 
 app.get('/removecard/:id', authenticateUser, function (req, res) {
-  //fetchPokemonDB(req.params.id, (data) => res.json(data));
   removeUserCardDB(req.session.username, parseInt(req.params.id), (data)=>res.json(data));
 });
 
-app.get('/orderlog', authenticateUser, function (req, res) {
-    res.sendFile('views/orderlog.html', {root: __dirname});
-});
 
-
-
-
-
-function addUserCardDB(username, id, next) {
-
-  userModel.find({"username": username}, function(err, data){
-      let cards = data[0].shoppingcard;
-      let newQty = 0;
-      let exists = false;
-      for(let i = 0; i < cards.length; ++i){
-        if(cards[i].id == id){
-            cards[i].qty = cards[i].qty  + 1;
-            newQty = cards[i].qty;
-            exists = true;
-            break;
-        }
-      }
-      if(!exists){
-        cards.push({"id": id, "qty": 1});
-        newQty = 1;
-      }
-    userModel.updateOne({"username": username}, {$set: {"shoppingcard":cards}}, ()=>next({"id": id, "qty":newQty}));})
-  }
-
-  function removeUserCardDB(username, id, next) {
-
-    userModel.find({"username": username}, function(err, data){
-      let cards = data[0].shoppingcard;
-      let newQty = 0;
-      let i = 0;
-      for(; i < cards.length; ++i){
-          if(cards[i].id == id && cards[i].qty > 0){
-            cards[i].qty =  cards[i].qty - 1;
-            newQty = cards[i].qty;
-            break;
-          }
-          else if(cards[i].id == id){
-            break;
-          }
-      }
-      cards = cards.filter((item)=>item.qty>0);
-      userModel.updateOne({"username": username}, {$set: {"shoppingcard":cards}}, ()=>next({"id": id, "qty":newQty}));})
-    }
-
-    function getUserPurchaseDB(username, next){
-      userModel.find({"username": username}, function(err, data){
-        let cards = data[0].shoppingcard;
-        //let purchaseSummary = 'Details:\n';
-        let cost = 0.0;
-        for(let i = 0; i < cards.length; ++i){
-          //purchaseSummary += `Pokemon ID: ${cards[i].id} - QTY: ${cards[i].qty}\n`;
-          cost += 30 * cards[i].qty;
-        } 
-        next({"cards": cards, "cost": cost});
-      })
-    }
-
-    function processUserPurchaseDB(username, next){
-      userModel.find({"username": username}, function(err, data){
-        let cards = data[0].shoppingcard;
-        if(cards.length <= 0){
-          next("nothing in the card");
-          return;
-        }
-        //let purchaseDetails = JSON.stringify(cards);
-        userModel.updateOne({"username": username}, {$set: {"shoppingcard":[]}, $push: {"timeline": {"cards": cards, time: new Date()}}}, ()=>next("purchase procssed"))
-      });
-    }
 
 app.get('/pokemonpurchase/:id', authenticateUser, function (req, res) {
   poksModel.find({ "id": req.params.id }, { _id: 0, id: 1, name: 1, weight: 1, height: 1, species: 1 }, function (err, properties) {
@@ -353,6 +342,16 @@ app.get('/checkout', authenticateUser, (req, res)=>{
 app.get('/purchasehistory', authenticateUser, (req, res) => {
   getPurchasehistory(req.session.username, (data)=>res.json(data))
 });
+
+
+
+
+
+
+
+
+
+
 //////////////////////////////////////////////////////////**** */
 app.get('/log/poklogs', function (req, res) {
   poklogsModel.find({}, { _id: 0, id: 1, likes: 1, dislikes: 1 }, function (err, logs) {

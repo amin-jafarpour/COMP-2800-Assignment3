@@ -1,21 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout</title>
+    <style>
+        #navbar {
+            background-color: #333;
+            overflow: hidden;
+            width: 100%;
+            height: 100px;
+        }
+        
+        #navbar a {
+            display: block;
+            float: left;
+            padding: 10px;
+            font-size: 30px;
+            color: #f2f2f2;
+            text-decoration: none;
+            padding: 14px 16px;
+            text-align: center;
+        }
+        
+        #navbar a:hover {
+            background-color: #f2f2f2;
+            color: rgb(19, 16, 16);
+        }
+    </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
-         function addItem(jsonObj){
+        function addItem(jsonObj) {
             const add = document.createElement('button');
             const remove = document.createElement('button');
             const div = document.createElement('div');
             const qty = document.createElement('p');
             const p = document.createElement('p');
-            add.onclick = function (){addcard(jsonObj.id)};
+            add.onclick = function() {
+                addcard(jsonObj.id)
+            };
             add.innerHTML = "+";
-            remove.onclick = function (){removecard(jsonObj.id)};
+            remove.onclick = function() {
+                removecard(jsonObj.id)
+            };
             remove.innerHTML = "-";
             p.textContent = `ID:${jsonObj.id}`;
             qty.id = `qty${jsonObj.id}`;
@@ -32,12 +61,12 @@
             $.ajax({
                 type: "GET",
                 url: `/summarypurchase`,
-                success: function (jsonObj) {
-                    for(let i = 0; i < jsonObj.cards.length; ++i){
+                success: function(jsonObj) {
+                    for (let i = 0; i < jsonObj.cards.length; ++i) {
                         console.log(jsonObj.cards[i], "yeeesd");
                         addItem(jsonObj.cards[i]);
                     }
-                    
+
                 }
             })
 
@@ -49,7 +78,7 @@
                 await $.ajax({
                     type: "GET",
                     url: `/addcard/${id}}`,
-                    success: function (data) {
+                    success: function(data) {
                         console.log("heeeey", data.qty);
                         $(`#qty${id}`).text("QTY: " + data.qty);
                     }
@@ -64,8 +93,23 @@
                 await $.ajax({
                     type: "GET",
                     url: `/removecard/${id}}`,
-                    success: function (data) {
+                    success: function(data) {
                         $(`#qty${id}`).text("QTY: " + data.qty);
+                    }
+                })
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+        async function processpurchase() {
+            try {
+                await $.ajax({
+                    type: "GET",
+                    url: `/processpurchase`,
+                    success: function(data) {
+                        $(`#payment-details`).text(JSON.stringify(data));
+                        $("#purchaselog").text("");
                     }
                 })
             } catch (error) {
@@ -76,10 +120,24 @@
         window.onload = getPurchaseLog;
     </script>
 </head>
+
 <body>
+
+    <nav id="navbar">
+        <ul>
+            <a href="/logout">
+                Log out
+            </a>
+
+            <a onclick="processpurchase()">Place order</a>
+        </ul>
+    </nav>
+
+    <div id="payment-details"></div>
 
 
     <div id="purchaselog"></div>
-    
+
 </body>
+
 </html>

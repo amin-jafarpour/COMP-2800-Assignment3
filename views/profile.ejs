@@ -7,9 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile</title>
 
-       
-       
-   
+
+
+
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
@@ -19,7 +19,7 @@
                 await $.ajax({
                     type: "GET",
                     url: `http://localhost:5000/log/like/${$('#pokid').text()}`,
-                    success: function (data) {
+                    success: function(data) {
                         $('#numLikes').text(data[0].likes);
 
                     }
@@ -35,7 +35,7 @@
                 await $.ajax({
                     type: "GET",
                     url: `http://localhost:5000/log/dislike/${$('#pokid').text()}`,
-                    success: function (data) {
+                    success: function(data) {
                         $('#numDislikes').text(data[0].dislikes);
                     }
                 })
@@ -44,12 +44,12 @@
             }
         }
 
-        window.onload = async function () {
+        window.onload = async function() {
 
             await $.ajax({
-                type: "GET",//http://localhost:5000/log/poklogs/10
+                type: "GET", //http://localhost:5000/log/poklogs/10
                 url: `http://localhost:5000/log/poklogs/${$('#pokid').text()}`,
-                success: function (data) {
+                success: function(data) {
                     $('#numLikes').text(data[0].likes);
                     $('#numDislikes').text(data[0].dislikes);
                     console.log(data);
@@ -74,45 +74,50 @@
     <div class="poke-info">
 
 
-        <h1>ID: <%= id %>
+        <h1>ID:
+            <%= id %>
         </h1>
-        <p>Name: <%= name %>
+        <p>Name:
+            <%= name %>
         </p>
-        <p>weight : <%= weight %>
+        <p>weight :
+            <%= weight %>
         </p>
-        <p>Height : <%= height %>
+        <p>Height :
+            <%= height %>
         </p>
-        <p>species : <%= species %>
+        <p>species :
+            <%= species %>
         </p>
     </div>
 
-  
 
-        <div class="gird-container">
-            <div>
-                <label>Likes</label>
-                <label id="numLikes"></label>
-            </div>
-           <div>
+
+    <div class="gird-container">
+        <div>
+            <label>Likes</label>
+            <label id="numLikes"></label>
+        </div>
+        <div>
             <input type="button" onclick="likes()" value="like">
-           </div>
+        </div>
+    </div>
+
+    <div class="gird-container">
+        <div>
+            <label>Dislikes</label>
+            <label id="numDislikes"></label>
         </div>
 
-        <div class="gird-container">
-            <div>
-                <label>Dislikes</label>
-                <label id="numDislikes"></label>
-            </div>
-
-            <div>
-                <input type="button" onclick="dislikes()" value="dislike">
-            </div>
+        <div>
+            <input type="button" onclick="dislikes()" value="dislike">
         </div>
+    </div>
 
 
 
 
-        <!-- IMPORTANT -->
+    <!-- IMPORTANT -->
     <p id="pokid" style="visibility: hidden;">
         <%= id %>
     </p>
