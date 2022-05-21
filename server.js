@@ -140,7 +140,7 @@ function getPurchasehistory(username, next) {
             history = history.sort(function(p1, p2) { return p1.time > p2.time });
 
             next(history);
-            z
+
         }
     });
 }
@@ -347,7 +347,16 @@ app.get('/checkout', authenticateUser, (req, res) => {
 
 
 app.get('/purchasehistory', authenticateUser, (req, res) => {
-    getPurchasehistory(req.session.username, (data) => res.json(data))
+    getPurchasehistory(req.session.username, function(data) {
+        let content = 'div class="history-items"';
+        for (let i = 0; i < data.length; ++i) {
+            content += "<div>";
+            content += `${data[i].time}: ${data[i].str}`;
+            content += '</div>'
+        }
+        content += '</div>'
+        res.send(content);
+    })
 });
 
 
