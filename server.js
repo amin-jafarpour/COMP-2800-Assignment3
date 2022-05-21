@@ -19,6 +19,7 @@ app.use(cors());
 const session = require('express-session');
 const { query } = require('express');
 const { parse } = require('path');
+const { clearScreenDown } = require('readline');
 //***********************************************************************************************************************
 app.use(session({ secret: 'ssshhhhh', saveUninitialized: true, resave: true }));
 
@@ -239,6 +240,18 @@ function authenticateUser(req, res, next) {
 }
 
 //********************************************************************************************************************** */
+
+app.get('/', function(req, res) {
+    console.log('hihihi');
+    if (req.session.authenticated) {
+        res.redirect("/home");
+    } else {
+        res.sendFile('/index.html', { root: __dirname });
+    }
+});
+
+
+
 
 app.get('/search', function(req, res) {
     if (req.session.authenticated) {
