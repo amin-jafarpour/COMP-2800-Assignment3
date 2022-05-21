@@ -89,6 +89,27 @@
 
             document.getElementsByTagName("style")[0].innerHTML = document.getElementById('css').innerHTML;
 
+            getQty();
+
+        }
+
+        function getQty() {
+
+            $.ajax({
+                type: "GET",
+                url: `/summarypurchase`,
+                success: function(jsonObj) {
+                    const qty = document.getElementById('qty');
+                    qty.innerHTML = 0;
+                    for (let i = 0; i < jsonObj.cards.length; ++i) {
+                        if (jsonObj.cards[i].id == document.getElementById('pokid').innerHTML.trim()) {
+                            qty.innerHTML = jsonObj.cards[i].qty;
+                        }
+                    }
+
+                }
+            })
+
 
         }
     </script>
