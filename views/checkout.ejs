@@ -73,6 +73,7 @@
             div.className = "item-container";
             document.getElementById('purchaselog').appendChild(div);
             totalCost += jsonObj.qty * 30;
+            document.getElementById('total-cost').innerHTML = totalCost;
         }
 
         function getPurchaseLog() {
@@ -102,6 +103,7 @@
                         $(`#qty${id}`).text("QTY: " + data.qty);
                         $(`#cost${id}`).text(`${data.qty} * ${"$30"} =${data.qty * 30}`);
                         totalCost += 30;
+                        document.getElementById('total-cost').innerHTML = totalCost;
                     }
                 })
             } catch (error) {
@@ -117,9 +119,10 @@
                     success: function(data) {
                         $(`#qty${id}`).text("QTY: " + data.qty);
                         $(`#cost${id}`).text(`${data.qty} * ${"$30"} =${data.qty * 30}`);
-                        if (data.qty != 0) {
+                        if (totalCost != 0) {
                             totalCost -= 30;
                         }
+                        document.getElementById('total-cost').innerHTML = totalCost;
                     }
                 })
             } catch (error) {
@@ -160,8 +163,9 @@
 
     <div id="payment-details"></div>
 
-
     <div id="purchaselog"></div>
+
+    <div><span>Total cost: $</span><span id="total-cost">0.0</span></div>
 
 </body>
 
